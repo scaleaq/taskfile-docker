@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v3
       - name: build
         run: |
+          shopt -s expand_aliases
           alias task='docker run --rm -it -w $(PWD) -v $(PWD):$(PWD) --env-file <(env) scaleaq/taskfile'
           task login-to-docker-registry
           task setup-docker-buildx
