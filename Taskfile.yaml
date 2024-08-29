@@ -1,0 +1,41 @@
+version: 3
+env:
+  NAME: taskfile
+  REGISTRY: scaleaq
+vars:
+  BASE_DIR:
+    sh: pwd
+  TASKFILE_VERSION:
+    sh: 'echo {{ .TASKFILE_VERSION | default "latest" }}'
+  INCLUDE_LATEST_TAG:
+    sh: 'echo {{ .INCLUDE_LATEST_TAG | default "false" }}'
+  IMAGE_BASE:
+    sh: echo {{.REGISTRY}}/{{.NAME}}
+  IMAGE_VERSION:
+    sh: echo {{.IMAGE_BASE}}:{{.TASKFILE_VERSION}}
+  CONDITIONAL_LATEST_TAG:
+    sh: |
+      if [ "{{.INCLUDE_LATEST_TAG}}" = "true" ]; then
+        echo "-t {{.IMAGE_BASE}}:latest"
+      else
+        echo ""
+      fi
+
+tasks:
+  build:
+    desc: "Build the docker image"
+    cmds:
+      - docker buildx build 
+        -t {{.IMAGE_VERSION}} 
+        {{.CONDITIONAL_LATEST_TAG}} 
+        --platform linux/amd64,linux/arm64 
+        --push 
+        --build-arg TASKFILE_VERSION={{.TASKFILE_VERSION}} 
+        --progress plain 
+        -f Dockerfile 
+        .
+
+  run:
+    desc: "Run the docker image"
+    cmds:
+      - docker run --rm -it -w {{.BASE_DIR}} -v {{.BASE_DIR}}:{{.BASE_DIR}} --env-file <(env) {{.IMAGE}} 

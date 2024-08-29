@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      TASKFILE_VERSION:
+        description: "Taskfile version"
+        required: true
+        type: string
+        default: v3.38.0
+      INCLUDE_LATEST_TAG:
+        description: "Tag as latest"
+        required: true
+        type: boolean
+        default: false
+
+env:
+  DOCKER_HUB_USERNAME: ${{ vars.DOCKER_HUB_USERNAME }}
+  DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (GitHub)
+        uses: actions/checkout@v3
+      - name: build
+        run: |
+          alias task='docker run --rm -it -w $(PWD) -v $(PWD):$(PWD) --env-file <(env) scaleaq/taskfile'
+          task build TASKFILE_VERSION=${{inputs.TASKFILE_VERSION}} INCLUDE_LATEST_TAG=${{inputs.INCLUDE_LATEST_TAG}}
