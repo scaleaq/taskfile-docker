@@ -27,4 +27,6 @@ jobs:
       - name: build
         run: |
           alias task='docker run --rm -it -w $(PWD) -v $(PWD):$(PWD) --env-file <(env) scaleaq/taskfile'
+          task login-to-docker-registry
+          task setup-docker-buildx
           task build TASKFILE_VERSION=${{inputs.TASKFILE_VERSION}} INCLUDE_LATEST_TAG=${{inputs.INCLUDE_LATEST_TAG}}

@@ -22,6 +22,16 @@ vars:
       fi
 
 tasks:
+  login-to-docker-registry:
+    desc: "Login to the docker registry"
+    cmds:
+      - echo {{.DOCKER_HUB_PASSWORD}} | docker login -u {{.DOCKER_HUB_USERNAME}} --password-stdin
+
+  setup-docker-buildx:
+    desc: "Setup docker buildx"
+    cmds:
+      - docker buildx create --use
+
   build:
     desc: "Build the docker image"
     cmds:
