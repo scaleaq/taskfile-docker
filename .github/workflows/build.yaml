@@ -19,7 +19,7 @@ env:
   DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
 jobs:
-  dns:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (GitHub)
